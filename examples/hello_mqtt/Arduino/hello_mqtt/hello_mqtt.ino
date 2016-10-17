@@ -13,7 +13,7 @@
  * https://github.com/256dpi/arduino-mqtt       
  * 
  * You can check if your device successfully sends messages here:
- * connection here: https://shiftr.io/try
+ * https://shiftr.io/try
  * Also open the serial monitor in Arduino to check for errors
  */
 
