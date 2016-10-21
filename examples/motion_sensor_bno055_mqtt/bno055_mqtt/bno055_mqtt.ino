@@ -57,8 +57,8 @@ char *mqtt_password = "try";
 char *device_name = "MKR1000"; // can be freely set, e.g. your name
 
 // Wireless LAN details
-char ssid[] = "www.strom-dumping.de";     //  your network SSID (name)
-char pass[] = "5401018917668218";  // your network password
+char ssid[] = "your wlan name";     //  your network SSID (name)
+char pass[] = "your wlan password";  // your network password
 int status = WL_IDLE_STATUS;     // the Wifi radio's status
 
 WiFiClient net;
