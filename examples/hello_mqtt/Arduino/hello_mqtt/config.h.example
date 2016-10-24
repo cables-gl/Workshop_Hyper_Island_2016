@@ -1,0 +1,9 @@
+// MQTT details
+char *mqtt_server = "broker.shiftr.io";
+char *mqtt_username = "try";
+char *mqtt_password = "try";
+char *device_name = "MKR1000"; // can be freely set, e.g. your name
+
+// Wireless LAN details
+char *wlan_name = "YOUR WLAN NAME";     //  your network SSID (name)
+char *wlan_password = "YOUR WLAN PASSWORD";  // your network password

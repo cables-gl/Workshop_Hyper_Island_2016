@@ -21,6 +21,8 @@
 #include <WiFi101.h>
 #include <MQTTClient.h>
 
+#include "config.h" // WLAN / MQTT user credentials
+
 // MQTT details
 char *mqtt_server = "broker.shiftr.io";
 char *mqtt_username = "try";
