@@ -1,0 +1,14 @@
+/**
+ * Copy this file, rename to "config.h" and put in your
+ * user credentials / wlan infos.
+ */
+
+// MQTT details
+char *mqtt_server = "broker.shiftr.io";
+char *mqtt_username = "try";
+char *mqtt_password = "try";
+char *device_name = "MKR1000"; // can be freely set, e.g. your name
+
+// Wireless LAN details
+char ssid[] = "YOUR WLAN NAME";     //  your network SSID (name)
+char pass[] = "YOUR WLAN PASSWORD";  // your network password

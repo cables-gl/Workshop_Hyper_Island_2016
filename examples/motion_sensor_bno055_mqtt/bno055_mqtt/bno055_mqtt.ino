@@ -44,21 +44,14 @@
 #include <Adafruit_BNO055.h>
 #include <utility/imumaths.h>
 
+#include "config.h" // WLAN / MQTT user credentials
+
 /* Set the delay between fresh samples */
 #define BNO055_SAMPLERATE_DELAY_MS (100)
 #define SEND_DELAY_MS (100)
 
 Adafruit_BNO055 bno = Adafruit_BNO055(55);
 
-// MQTT details
-char *mqtt_server = "broker.shiftr.io";
-char *mqtt_username = "try";
-char *mqtt_password = "try";
-char *device_name = "MKR1000"; // can be freely set, e.g. your name
-
-// Wireless LAN details
-char ssid[] = "your wlan name";     //  your network SSID (name)
-char pass[] = "your wlan password";  // your network password
 int status = WL_IDLE_STATUS;     // the Wifi radio's status
 
 WiFiClient net;
