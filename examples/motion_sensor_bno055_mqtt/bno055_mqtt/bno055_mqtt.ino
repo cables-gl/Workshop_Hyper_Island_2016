@@ -16,11 +16,16 @@
  * https://shiftr.io/try
  * Also open the serial monitor in Arduino to check for errors
  * 
- * Connections: (BNO055: Arduino MKR1000)
+ * Connections: 
+ * - BNO055: Arduino MKR1000
  *   - GND: GND
  *   - VIN: VCC
  *   - SDA: SDA
  *   - SCL: SCL
+ *  - Adafruit NeoPixel Ring 12: Arduino MKR1000
+ *    - GND: GND
+ *    - 5V Power: VCC
+ *    - Data Input: 6
   */
   
   /* Board layout:
@@ -38,32 +43,46 @@
 #include <SPI.h>
 #include <WiFi101.h>
 #include <Wire.h>
-#include <ArduinoJson.h>
 #include <MQTTClient.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BNO055.h>
 #include <utility/imumaths.h>
 
+#include <Adafruit_NeoPixel.h>
+#ifdef __AVR__
+  #include <avr/power.h>
+#endif
+
 #include "config.h" // WLAN / MQTT user credentials
 
-/* Set the delay between fresh samples */
-#define BNO055_SAMPLERATE_DELAY_MS (100)
+// how often messages are send (in milliseconds)
 #define SEND_DELAY_MS (100)
 
 Adafruit_BNO055 bno = Adafruit_BNO055(55);
 
 int status = WL_IDLE_STATUS;     // the Wifi radio's status
+unsigned long lastMillis = 0;
+
+#define NEOPIXEL_PIN 6
+#define NUMPIXELS 12
 
 WiFiClient net;
 MQTTClient client;
 
-unsigned long lastMillis = 0;
+// rgb color values
+int r = 50;
+int g = 50;
+int b = 50;
+
+Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
 
 void setup() {
   Serial.begin(115200);
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
   }
+
+  pixels.begin(); // This initializes the NeoPixel library.
 
   // check for the presence of the shield:
   if (WiFi.status() == WL_NO_SHIELD) {
@@ -115,6 +134,11 @@ void setup() {
 void loop() {
   client.loop();
 
+  for(int i=0;i<NUMPIXELS;i++){
+    pixels.setPixelColor(i, pixels.Color(r, g, b));
+  }
+  pixels.show(); // This sends the updated pixel color to the hardware.
+
   /* Get a new sensor event */
   sensors_event_t event;
   bno.getEvent(&event);
@@ -122,58 +146,19 @@ void loop() {
   // publish a message when it's time
   if(millis() - lastMillis > SEND_DELAY_MS) {
     lastMillis = millis();
-    //String pubString = "{"report":{"light": "" + String(lightRead) + ""}}"; 
-    /*
-    String pubString = 
-            String("{") + 
-            """x"": " + String((float)event.orientation.x) + ","
-            """y"": " + String((float)event.orientation.y) + ","
-            """z"": " + String((float)event.orientation.z) + 
-            "}";
-    */
-
-    // JSON generation
-    /*
-    const int BUFFER_SIZE = 200;
-    StaticJsonBuffer<BUFFER_SIZE> jsonBuffer; // increase if your object gets much or complex
-    JsonObject& root = jsonBuffer.createObject();
-  
-    root["x"] = event.orientation.x;
-    root["y"] = event.orientation.y;
-    root["z"] = event.orientation.z;
-
-    String json = String("");
     
-    root.printTo(json);
-    Serial.print("The JSON: ");
-    Serial.println(json);
-    */
-    /*
-    String json = String("{") +
-      "\\\"x\\\":" + event.orientation.x + ","
-      "\\\"y\\\":" + event.orientation.y + ","
-      "\\\"z\\\":" + event.orientation.z
-      + "}";
-      */
-      
-      /*
-      String json = String("{") +
-      "\"x\":" + event.orientation.x + ","
-      "\"y\":" + event.orientation.y + ","
-      "\"z\":" + event.orientation.z
-      + "}";
-      */
-      String json = String("") +
+    
+      String orientationString = String("") +
           event.orientation.x + "," +
           event.orientation.y + "," +
           event.orientation.z
       ;
     
-    //String pubString = String((float)event.orientation.x) + "," + String((float)event.orientation.y) + "," + String((float)event.orientation.z);
     // The channel this device sends to, the message
-    client.publish("/orientation", json);
+    client.publish("/orientation", orientationString);
 
     /* roll, pitch, heading, see diagram on top */
+    /*
     Serial.print(F("Orientation: "));
     Serial.print((float)event.orientation.x);
     Serial.print(F(" "));
@@ -181,9 +166,8 @@ void loop() {
     Serial.print(F(" "));
     Serial.print((float)event.orientation.z);
     Serial.println(F(""));
+    */
   }
-  
-  //delay(BNO055_SAMPLERATE_DELAY_MS);
 }
 
 void printWifiData() {
@@ -251,6 +235,16 @@ void messageReceived(String topic, String payload, char * bytes, unsigned int le
   Serial.print(" - ");
   Serial.print(payload);
   Serial.println();
+  int commaIndex = payload.indexOf(',');
+  //  Search for the next comma just after the first
+  int secondCommaIndex = payload.indexOf(',', commaIndex+1);
+  String firstValue = payload.substring(0, commaIndex);
+  String secondValue = payload.substring(commaIndex+1, secondCommaIndex);
+  String thirdValue = payload.substring(secondCommaIndex+1); // To the end of the string
+  r = firstValue.toInt();
+  g = secondValue.toInt();
+  b = thirdValue.toInt();
+  Serial.print("New color: "); Serial.print(r); Serial.print(", "); Serial.print(g); Serial.print(", "); Serial.println(b);
 }
 
 /**************************************************************************/
