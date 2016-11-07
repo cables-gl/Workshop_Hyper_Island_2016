@@ -46,4 +46,13 @@ Examples and tutorials for the cables-workshop at Hyper Island School of Design 
   - To use MQTT you need an MQTT-server (broker) where you send the information to
   - [shiftr.io](https://shiftr.io) is a free broker which allows you to send and receive data very fast
 
-  ​
+## Useful Ressources
+
+- [Arduino code to trigger IFTTT event](https://gist.github.com/outofmbufs/d6ced37b49a484c495f0)
+- [How to trigger actions on Arduino using thinger.io](https://community.thinger.io/t/make-your-iot-things-react-to-hundred-of-ifttt-events/41)
+- [Maker Channel on IFTTT](https://ifttt.com/maker)
+- [thinger.io](https://thinger.io/)
+- [parse.com](http://parse.com/)
+  - Push notifications to Arduino (uses MQTT!?)
+  - Data-store
+
