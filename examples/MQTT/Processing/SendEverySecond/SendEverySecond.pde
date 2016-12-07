@@ -5,8 +5,27 @@
 // client here: https://shiftr.io/try.
 
 import mqtt.*;
+import java.io.PrintStream;
 
 MQTTClient client;
+
+private class Interceptor extends PrintStream {
+    public Interceptor(OutputStream out)
+    {
+        super(out, true);
+    }
+    @Override
+    public void print(String s)
+    {//do what ever you like
+        super.print(s);
+    }
+}
+public static void main(String[] args)
+{
+    PrintStream origOut = System.out;
+    PrintStream interceptor = new Interceptor(origOut);
+    System.setOut(interceptor);// just add the interceptor
+}
 
 int SEND_DELAY = 1000; // how often messages are sent in milliseconds
 String CLIENT_NAME = "Waldemar"; // change this to whatever you like, e.g. your name

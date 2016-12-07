@@ -1,5 +1,8 @@
 // This example sketch connects to shiftr.io
-// and listenes for incoming messages
+// and sends a message every second
+//
+// After starting the sketch you can find the
+// client here: https://shiftr.io/try.
 
 import mqtt.*;
 // imports to capture console output
@@ -14,7 +17,7 @@ String MQTT_SERVER = "broker.shiftr.io";
 String MQTT_USERNAME = "try";
 String MQTT_PASSWORD = "try";
 
-String lastMessage = "";
+long lastSend = 0; // the last time a MQTT message was sent
 
 void connect(){
   println("Connecting to MQTT Broker...");
@@ -28,23 +31,16 @@ void setup() {
   PrintStream origOut = System.out;
   PrintStream interceptor = new Interceptor(origOut);
   System.setOut(interceptor);// just add the interceptor
-  client.subscribe("/toprocessing");
-  fill(0);
-  noStroke();
 }
 
 void draw() {
-  background(255);
-  textMode(CENTER);
-  text(lastMessage, width/2, height/2);
+  // send a message every second
+  if(millis() > lastSend + SEND_DELAY) {
+    client.publish("/justtesting", "Hi");
+    println("MQTT message sent...");
+    lastSend = millis();
+  }
 }
-
-void messageReceived(String topic, byte[] payload) {
-  String message = new String(payload);
-  println("new message: " + topic + " - " + message);
-  lastMessage = message;
-}
-
 
 // Helper, to reconnect on disconnect
 private class Interceptor extends PrintStream {
